@@ -26,6 +26,15 @@ pipeline {
             }
         }
 
+        stage('Check Scanner') {
+            steps {
+                echo "Vérification du scanner SonarQube"
+                sh "echo Scanner path: ${SONAR_SCANNER}"
+                sh "ls -l ${SONAR_SCANNER}/bin/"
+                sh "${SONAR_SCANNER}/bin/sonar-scanner --version"
+            }
+        }
+
         stage('SonarQube') {
             steps {
                 echo "Analyse SonarQube en cours..."
