@@ -19,15 +19,15 @@ pipeline {
         stage('Build') {
             steps {
                 echo "Construction des images Docker"
-                sh "docker compose -f ${COMPOSE_FILE} build"
+                sh "docker-compose -f ${COMPOSE_FILE} build"
             }
         }
 
         stage('Deploy') {
             steps {
                 echo "Déploiement de l’application"
-                sh "docker compose -f ${COMPOSE_FILE} down -v"
-                sh "docker compose -f ${COMPOSE_FILE} up -d"
+                sh "docker-compose -f ${COMPOSE_FILE} down -v"
+                sh "docker-compose -f ${COMPOSE_FILE} up -d"
             }
         }
 
