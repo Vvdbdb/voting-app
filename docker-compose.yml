@@ -86,10 +86,28 @@ services:
     networks:
       - public_net
       - private_net
+  
+  sonarqube:
+    image: sonarqube:lts
+    container_name: sonarqube
+    ports:
+      - "9000:9000"
+    environment:
+      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_logs:/opt/sonarqube/logs
+      - sonarqube_extensions:/opt/sonarqube/extensions
+    networks:
+      - public_net
+      - private_net
 
 volumes:
   db_data:
   jenkins_home:
+  sonarqube_data:
+  sonarqube_logs:
+  sonarqube_extensions:
 
 networks:
   public_net:
