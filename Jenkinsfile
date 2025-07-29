@@ -5,7 +5,7 @@ pipeline {
         PROJECT_NAME = 'voting-app'
         REPO_URL = 'https://github.com/Vvdbdb/voting-app.git'
         REPO_BRANCH = 'main'
-        COMPOSE_FILE = "docker-compose.app.yml"
+        COMPOSE_FILE = "docker-compose.yml"
     }
 
     stages {

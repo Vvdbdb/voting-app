@@ -8,7 +8,4 @@ RUN apt-get update && \
     usermod -aG docker jenkins && \
     apt-get clean
 
-# Assurez-vous que Jenkins a accès au socket Docker
-#RUN chown jenkins:docker /var/run/docker.sock
-
 USER jenkins
