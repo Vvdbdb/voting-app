@@ -42,13 +42,13 @@ pipeline {
     post {
         success {
             echo 'Pipeline terminé avec succès.'
-            mail to: 'timopoubelle@gmail.com',
+            mail to: 'timotheekabore79@gmail.com',
                 subject: "Pipeline succès - ${PROJECT_NAME}",
                 body: "Le déploiement de ${PROJECT_NAME} a réussi !"
         }
         failure {
             echo 'Pipeline échoué.'
-            mail to: 'timopoubelle@gmail.com',
+            mail to: 'timotheekabore79@gmail',
                 subject: "Pipeline échoué - ${PROJECT_NAME}",
                 body: "Le déploiement de ${PROJECT_NAME} a échoué."
         }
