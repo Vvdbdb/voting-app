@@ -19,15 +19,20 @@ pipeline {
         stage('Build') {
             steps {
                 echo "Construction des images Docker"
-                sh "docker-compose -f ${COMPOSE_FILE} build"
+                sh "docker-compose -f ${COMPOSE_FILE} build db redis vote result worker"
             }
         }
 
         stage('Deploy') {
             steps {
                 echo "Déploiement de l’application"
-                sh "docker-compose -f ${COMPOSE_FILE} down -v"
-                sh "docker-compose -f ${COMPOSE_FILE} up -d"
+                sh "docker-compose -f ${COMPOSE_FILE} stop db redis vote result worker || true"
+                sh "docker-compose -f ${COMPOSE_FILE} rm -f db redis vote result worker || true"
+    
+                sh "docker rm -f db redis vote result worker || true"
+        
+                echo "Démarrage des services applicatifs"
+                sh "docker-compose -f ${COMPOSE_FILE} up -d db redis vote result worker"
             }
         }
 
@@ -48,7 +53,7 @@ pipeline {
         }
         failure {
             echo 'Pipeline échoué.'
-            mail to: 'timotheekabore79@gmail',
+            mail to: 'timotheekabore79@gmail.com',
                 subject: "Pipeline échoué - ${PROJECT_NAME}",
                 body: "Le déploiement de ${PROJECT_NAME} a échoué."
         }
