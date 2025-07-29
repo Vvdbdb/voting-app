@@ -6,6 +6,9 @@ pipeline {
         REPO_URL = 'https://github.com/Vvdbdb/voting-app.git'
         REPO_BRANCH = 'master'
         COMPOSE_FILE = "docker-compose.yml"
+        SONAR_SCANNER = "SonarScanner" // nom défini dans Jenkins
+        SONAR_PROJECT_KEY = "voting-app" // même nom que sur l'interface SonarQube
+        SONAR_HOST_URL = "http://sonarqube:9000" // correspond au nom du service docker
     }
 
     stages {
@@ -20,6 +23,18 @@ pipeline {
             steps {
                 echo "Construction des images Docker"
                 sh "docker-compose -f ${COMPOSE_FILE} build db redis vote result worker"
+            }
+        }
+
+        stage('SonarQube') {
+            steps {
+                echo "Analyse SonarQube en cours..."
+                withSonarQubeEnv('SonarQube') {
+                    sh "${SONAR_SCANNER}/bin/sonar-scanner \
+                        -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
+                        -Dsonar.sources=. \
+                        -Dsonar.host.url=${SONAR_HOST_URL}"
+                }
             }
         }
 
