@@ -4,7 +4,7 @@ pipeline {
     environment {
         PROJECT_NAME = 'voting-app'
         REPO_URL = 'https://github.com/Vvdbdb/voting-app.git'
-        REPO_BRANCH = 'main'
+        REPO_BRANCH = 'master'
         COMPOSE_FILE = "docker-compose.yml"
     }
 
