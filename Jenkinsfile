@@ -40,7 +40,7 @@ pipeline {
                 echo "Analyse SonarQube en cours..."
                 withSonarQubeEnv('SonarQube') {
                     withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
-                        sh "${SONAR_SCANNER}/bin/sonar-scanner \
+                        sh "sonar-scanner \ \
                             -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
                             -Dsonar.sources=. \
                             -Dsonar.host.url=${SONAR_HOST_URL} \
