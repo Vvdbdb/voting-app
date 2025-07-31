@@ -102,6 +102,18 @@ services:
       - public_net
       - private_net
 
+  sonarscanner:
+    build: ./
+    container_name: sonarscanner
+    environment:
+      - SONAR_HOST_URL=${SONAR_HOST_URL}
+      - SONAR_TOKEN=${SONAR_TOKEN}
+    networks:
+      - private_net
+      - public_net
+    volumes:
+      - .:/usr/src
+
 volumes:
   db_data:
   jenkins_home:
