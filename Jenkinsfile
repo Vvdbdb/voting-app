@@ -26,31 +26,42 @@ pipeline {
             }
         }
 
-        stage('SonarQube') {
+        // --- Étape d'analyse SonarQube intégrée ---
+        stage('SonarQube Analysis') { // J'ai renommé l'étape pour être plus spécifique
             steps {
-                echo "Analyse SonarQube en cours..."
-                withSonarQubeEnv('SonarQube') {
-                    withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
-                        sh """
-                            sonar-scanner \
-                            -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
-                            -Dsonar.sources=. \
-                            -Dsonar.host.url=${SONAR_HOST_URL} \
-                            -Dsonar.login=$SONAR_TOKEN
-                        """
+                script {
+                    withSonarQubeEnv('SonarQube') { // 'SonarQube' est le nom de la configuration SonarQube dans Jenkins
+                        withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
+                            echo "Lancement de l'analyse SonarQube pour le projet ${SONAR_PROJECT_KEY}"
+                            // La commande docker run pour le SonarScanner.
+                            // Le nom du réseau est 'voting-app_private_net' car ton dossier de projet est probablement 'voting-app'.
+                            sh '''
+                                docker run --rm \\
+                                  --network voting-app_private_net \\
+                                  -e SONAR_HOST_URL=$SONAR_HOST_URL \\
+                                  -e SONAR_TOKEN=$SONAR_TOKEN \\
+                                  -v $PWD:/usr/src \\
+                                  sonarsource/sonar-scanner-cli:latest \\
+                                  sonar-scanner \\
+                                    -Dsonar.projectKey=$SONAR_PROJECT_KEY \\
+                                    -Dsonar.sources=./vote,./result,./worker \\
+                                    -Dsonar.host.url=$SONAR_HOST_URL
+                            '''
+                        }
                     }
                 }
             }
         }
+        // --- Fin de l'étape SonarQube ---
 
         stage('Deploy') {
             steps {
                 echo "Déploiement de l’application"
                 sh "docker-compose -f ${COMPOSE_FILE} stop db redis vote result worker || true"
                 sh "docker-compose -f ${COMPOSE_FILE} rm -f db redis vote result worker || true"
-    
+                
                 sh "docker rm -f db redis vote result worker || true"
-        
+                
                 echo "Démarrage des services applicatifs"
                 sh "docker-compose -f ${COMPOSE_FILE} up -d db redis vote result worker"
             }
