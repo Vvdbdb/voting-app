@@ -27,19 +27,37 @@ pipeline {
             }
         }
 
-        stage('Analyse SonarQube') {
-        steps {
-            sh '''
-            docker compose run --rm sonarscanner \
-                -Dsonar.projectKey=voting-app \
-                -Dsonar.sources=vote,result,worker \
-                -Dsonar.host.url=$SONAR_HOST_URL \
-                -Dsonar.login=$SONAR_TOKEN \
-                -Dsonar.scm.disabled=true
-            '''
-        }
-        
-        }
+        stage('SonarQube Scan') {
+            steps {
+                script {
+                    // Nettoyage du dossier s’il existe déjà
+                    sh 'rm -rf sonar-src'
+
+                    // Crée un dossier temporaire et copie les sources à scanner
+                    sh '''
+                        mkdir -p sonar-src
+                        cp -r vote result worker sonar-src/
+                    '''
+
+                    // Lancer le scanner SonarQube dans un conteneur Docker
+                    sh '''
+                        docker run --rm \
+                            --network voting-app_private_net \
+                            -e SONAR_HOST_URL=$SONAR_HOST_URL \
+                            -e SONAR_TOKEN=$SONAR_TOKEN \
+                            -v "$WORKSPACE/sonar-src":/usr/src \
+                            -w /usr/src \
+                            sonarsource/sonar-scanner-cli:latest \
+                            sonar-scanner \
+                                -Dsonar.projectKey=$SONAR_PROJECT_KEY \
+                                -Dsonar.sources=. \
+                                -Dsonar.host.url=$SONAR_HOST_URL \
+                                -Dsonar.login=$SONAR_TOKEN \
+                                -Dsonar.scm.disabled=true \
+                                -Dsonar.working.directory=/tmp/.scannerwork
+                    '''
+                }
+            }
             post {
                 always {
                     // Nettoyage du dossier temporaire après exécution
