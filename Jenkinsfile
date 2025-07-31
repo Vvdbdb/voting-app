@@ -4,7 +4,7 @@ pipeline {
     environment {
         PROJECT_NAME = 'voting-app'
         REPO_URL = 'https://github.com/Vvdbdb/voting-app.git'
-        REPO_BRANCH = 'master'
+        REPO_BRANCH = 'main'
         COMPOSE_FILE = 'docker-compose.yml'
         SONAR_PROJECT_KEY = 'voting-app'
         SONAR_HOST_URL = 'http://sonarqube:9000'
@@ -30,16 +30,11 @@ pipeline {
         stage('SonarQube Scan') {
             steps {
                 script {
-                    // Nettoyage du dossier s’il existe déjà
                     sh 'rm -rf sonar-src'
-
-                    // Crée un dossier temporaire et copie les sources à scanner
                     sh '''
                         mkdir -p sonar-src
                         cp -r vote result worker sonar-src/
                     '''
-
-                    // Lancer le scanner SonarQube dans un conteneur Docker
                     sh '''
                         docker run --rm \
                             --network voting-app_private_net \
