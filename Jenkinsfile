@@ -88,13 +88,13 @@ pipeline {
         success {
             echo 'Pipeline terminé avec succès.'
             mail to: 'timotheekabore79@gmail.com',
-                 subject: "✅ Pipeline Succès - ${PROJECT_NAME}",
+                 subject: "Pipeline Succès - ${PROJECT_NAME}",
                  body: "Le déploiement de ${PROJECT_NAME} a réussi avec succès."
         }
         failure {
             echo 'Pipeline échoué.'
             mail to: 'timotheekabore79@gmail.com',
-                 subject: "❌ Pipeline Échoué - ${PROJECT_NAME}",
+                 subject: "Pipeline Échoué - ${PROJECT_NAME}",
                  body: "Le déploiement de ${PROJECT_NAME} a échoué. Vérifiez Jenkins."
         }
     }
